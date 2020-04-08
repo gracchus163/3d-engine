@@ -4,14 +4,16 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <cglm/cglm.h>
+#include <time.h>
 
 const char* vertexSource = "#version 150 core\n\
 	in vec3 coord3d;\n\
 	in vec3 color;\n\
 	out vec3 Color;\n\
+	uniform mat4 m_transform;\n\
 	void main(){\n\
 		Color = color;\n\
-		gl_Position = vec4(coord3d, 1.0);}";
+		gl_Position = m_transform * vec4(coord3d, 1.0);}";
 const char* fragmentSource = "#version 150 core\n\
 	in vec3 Color;\n\
 	out vec4 outColor; void main() { outColor = vec4(Color,1.0);}";
@@ -63,6 +65,25 @@ int main()
 	glLinkProgram(shaderProgram);
 	glUseProgram(shaderProgram);
 
+	while(!glfwWindowShouldClose(window)) {
+			glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+	glClear(GL_COLOR_BUFFER_BIT);
+	mat4 m_transform;
+	glm_mat4_identity(m_transform);
+
+	//float move = sinf((float)clock() /CLOCKS_PER_SEC * (2*3.14)/5);
+	float move = 0.5f;
+	float angle = (float)clock() / 10000 * 45;
+	vec3 axis_z = {0.0f,0.0f,1.0f};
+	vec3 move_vec = {move,  0.0f, 0.0f};
+	vec3 trans_vec;
+	mat4 m_rotate;
+	glm_rotate_make(m_rotate, glm_rad(angle), axis_z);
+	glm_vec3_rotate_m4(m_rotate, move_vec, trans_vec);
+	glm_translate(m_transform, trans_vec);
+	GLint uniform_m_transform;
+	uniform_m_transform = glGetUniformLocation(shaderProgram, "m_transform");
+	glUniformMatrix4fv(uniform_m_transform, 1, GL_FALSE, m_transform[0]);
 	GLint coord3dAttrib = glGetAttribLocation(shaderProgram, "coord3d");
 	glEnableVertexAttribArray(coord3dAttrib);
 	glVertexAttribPointer(coord3dAttrib, 3, GL_FLOAT, GL_FALSE, 6*sizeof(float), 0);
@@ -70,7 +91,7 @@ int main()
 	glEnableVertexAttribArray(colAttrib);
 	glVertexAttribPointer(colAttrib, 3, GL_FLOAT, GL_FALSE, 6*sizeof(float), (void*)(3*sizeof(float)));
 
-	while(!glfwWindowShouldClose(window)) {
+	//while(!glfwWindowShouldClose(window)) {
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 		glfwSwapBuffers(window);
 		glfwPollEvents();
