@@ -79,7 +79,8 @@ int main()
 	vec3 trans_vec;
 	mat4 m_rotate;
 	glm_rotate_make(m_rotate, glm_rad(angle), axis_z);
-	glm_vec3_rotate_m4(m_rotate, move_vec, trans_vec);
+	glm_mat4_mulv3(m_rotate, move_vec, trans_vec);
+	//glm_vec3_rotate_m4(m_rotate, move_vec, trans_vec);
 	glm_translate(m_transform, trans_vec);
 	GLint uniform_m_transform;
 	uniform_m_transform = glGetUniformLocation(shaderProgram, "m_transform");
