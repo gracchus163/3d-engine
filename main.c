@@ -48,47 +48,47 @@ int main()
 		0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 1.0f
 	};
 	float cube_vertices[] = {
-		    -0.5f, -0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f,
-     0.5f, -0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f,
-     0.5f,  0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f,
-     0.5f,  0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f,
-    -0.5f,  0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f,
-    -0.5f, -0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f,
+    -0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 
+     0.5f, -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 
+     0.5f,  0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 
+     0.5f,  0.5f, -0.5f, 1.0f, 1.0f, 0.0f, 
+    -0.5f,  0.5f, -0.5f, 0.0f, 1.0f, 1.0f, 
+    -0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 1.0f, 
 
-    -0.5f, -0.5f,  0.5f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f,
-     0.5f, -0.5f,  0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f,
-     0.5f,  0.5f,  0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f,
-     0.5f,  0.5f,  0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f,
-    -0.5f,  0.5f,  0.5f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f,
-    -0.5f, -0.5f,  0.5f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f,
+    -0.5f, -0.5f,  0.5f, 1.0f, 0.0f, 0.0f, 
+     0.5f, -0.5f,  0.5f, 0.0f, 1.0f, 0.0f, 
+     0.5f,  0.5f,  0.5f, 0.0f, 0.0f, 1.0f, 
+     0.5f,  0.5f,  0.5f, 1.0f, 1.0f, 0.0f, 
+    -0.5f,  0.5f,  0.5f, 0.0f, 1.0f, 1.0f, 
+    -0.5f, -0.5f,  0.5f, 1.0f, 0.0f, 1.0f, 
 
-    -0.5f,  0.5f,  0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f,
-    -0.5f,  0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f,
-    -0.5f, -0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f,
-    -0.5f, -0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f,
-    -0.5f, -0.5f,  0.5f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f,
-    -0.5f,  0.5f,  0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f,
+    -0.5f,  0.5f,  0.5f, 1.0f, 0.0f, 0.0f, 
+    -0.5f,  0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 
+    -0.5f, -0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 
+    -0.5f, -0.5f, -0.5f, 1.0f, 1.0f, 0.0f, 
+    -0.5f, -0.5f,  0.5f, 0.0f, 1.0f, 1.0f, 
+    -0.5f,  0.5f,  0.5f, 1.0f, 0.0f, 1.0f, 
 
-     0.5f,  0.5f,  0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f,
-     0.5f,  0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f,
-     0.5f, -0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f,
-     0.5f, -0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f,
-     0.5f, -0.5f,  0.5f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f,
-     0.5f,  0.5f,  0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f,
+     0.5f,  0.5f,  0.5f, 1.0f, 0.0f, 0.0f,
+     0.5f,  0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
+     0.5f, -0.5f, -0.5f, 0.0f, 0.0f, 1.0f,
+     0.5f, -0.5f, -0.5f, 1.0f, 1.0f, 0.0f,
+     0.5f, -0.5f,  0.5f, 0.0f, 1.0f, 1.0f,
+     0.5f,  0.5f,  0.5f, 1.0f, 0.0f, 1.0f,
 
-    -0.5f, -0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f,
-     0.5f, -0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f,
-     0.5f, -0.5f,  0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f,
-     0.5f, -0.5f,  0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f,
-    -0.5f, -0.5f,  0.5f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f,
-    -0.5f, -0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f,
+    -0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f,
+     0.5f, -0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
+     0.5f, -0.5f,  0.5f, 0.0f, 0.0f, 1.0f,
+     0.5f, -0.5f,  0.5f, 1.0f, 1.0f, 0.0f,
+    -0.5f, -0.5f,  0.5f, 0.0f, 1.0f, 1.0f,
+    -0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 1.0f,
 
-    -0.5f,  0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f,
-     0.5f,  0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f,
-     0.5f,  0.5f,  0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f,
-     0.5f,  0.5f,  0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f,
-    -0.5f,  0.5f,  0.5f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f,
-    -0.5f,  0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f
+    -0.5f,  0.5f, -0.5f, 1.0f, 0.0f, 0.0f,
+     0.5f,  0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
+     0.5f,  0.5f,  0.5f, 0.0f, 0.0f, 1.0f,
+     0.5f,  0.5f,  0.5f, 1.0f, 1.0f, 0.0f,
+    -0.5f,  0.5f,  0.5f, 0.0f, 1.0f, 1.0f,
+    -0.5f,  0.5f, -0.5f, 1.0f, 0.0f, 1.0f,
 };
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(cube_vertices), cube_vertices, GL_STATIC_DRAW);
@@ -127,7 +127,7 @@ int main()
 	glm_lookat(eye, center, axis_z, m_view);
 	GLint uniform_m_view = glGetUniformLocation(shaderProgram, "m_view");
 	glUniformMatrix4fv(uniform_m_view, 1, GL_FALSE, m_view[0]);
-	glm_perspective(glm_rad(45.0f), 800.0f/600.0f, 1.0f, 10.0f, m_proj);
+	glm_perspective(glm_rad(90.0f), 800.0f/600.0f, 1.0f, 10.0f, m_proj);
 	GLint uniform_m_proj = glGetUniformLocation(shaderProgram, "m_proj");
 	glUniformMatrix4fv(uniform_m_proj, 1, GL_FALSE, m_proj[0]);
 	float move = sinf((float)clock() /CLOCKS_PER_SEC * (2*3.14)/5);
@@ -157,7 +157,7 @@ int main()
 	glVertexAttribPointer(colAttrib, 3, GL_FLOAT, GL_FALSE, 6*sizeof(float), (void*)(3*sizeof(float)));
 
 	//while(!glfwWindowShouldClose(window)) {
-		glDrawArrays(GL_TRIANGLES, 0, 6);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}
