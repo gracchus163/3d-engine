@@ -40,7 +40,10 @@ int main()
 	float vertices[] = {
 		0.0f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
 		0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f,
-		-0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f
+		-0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f,
+		0.0f, 0.5f, 0.0f, 1.0f, 1.0f, 0.0f,
+		1.0f, 0.5f, 0.0f, 0.0f, 1.0f, 1.0f,
+		0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 1.0f
 	};
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
@@ -66,10 +69,11 @@ int main()
 	glUseProgram(shaderProgram);
 
 	while(!glfwWindowShouldClose(window)) {
-			glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-	glClear(GL_COLOR_BUFFER_BIT);
+	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+	glEnable(GL_DEPTH_TEST);
+	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 	mat4 m_transform;
-	glm_mat4_identity(m_transform);
+	//glm_mat4_identity(m_transform);
 
 	float move = sinf((float)clock() /CLOCKS_PER_SEC * (2*3.14)/5);
 	//float move = 0.5f;
@@ -77,17 +81,22 @@ int main()
 	vec3 axis_z = {0.0f,0.0f,1.0f};
 	vec3 move_vec = {move,  0.0f, 0.0f};
 	mat4 m_rotate;
-	glm_rotate_make(m_rotate, glm_rad(angle), axis_z);
+	glm_rotate_make(m_transform, move*20, axis_z);
 	//glm_mat4_mulv3(m_rotate, move_vec, 1.0f, trans_vec);
 	//glm_vec3_rotate_m4(m_rotate, move_vec, trans_vec);
-	glm_translate(m_transform, move_vec);
-	glm_mat4_mul(m_rotate, m_transform, m_transform);
+	//glm_translate(m_transform, move_vec);
+	//glm_mat4_mul(m_rotate, m_transform, m_transform);
+	vec4 result = {1.0f, 0.0f, 0.0f, 1.0f};
+	printf("%f, %f, %f\n", result[0], result[1], result[2]);
+	glm_mat4_mulv(m_transform, result, result);
+	printf("%f, %f, %f\n", result[0], result[1], result[2]);
 
 
 	GLint uniform_m_transform;
 	uniform_m_transform = glGetUniformLocation(shaderProgram, "m_transform");
 	glUniformMatrix4fv(uniform_m_transform, 1, GL_FALSE, m_transform[0]);
 	GLint coord3dAttrib = glGetAttribLocation(shaderProgram, "coord3d");
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	glEnableVertexAttribArray(coord3dAttrib);
 	glVertexAttribPointer(coord3dAttrib, 3, GL_FLOAT, GL_FALSE, 6*sizeof(float), 0);
 	GLint colAttrib = glGetAttribLocation(shaderProgram, "color");
@@ -95,7 +104,7 @@ int main()
 	glVertexAttribPointer(colAttrib, 3, GL_FLOAT, GL_FALSE, 6*sizeof(float), (void*)(3*sizeof(float)));
 
 	//while(!glfwWindowShouldClose(window)) {
-		glDrawArrays(GL_TRIANGLES, 0, 3);
+		glDrawArrays(GL_TRIANGLES, 0, 6);
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}
