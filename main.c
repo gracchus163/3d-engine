@@ -10,10 +10,12 @@ const char* vertexSource = "#version 150 core\n\
 	in vec3 coord3d;\n\
 	in vec3 color;\n\
 	out vec3 Color;\n\
-	uniform mat4 m_transform;\n\
+	uniform mat4 m_model;\n\
+	uniform mat4 m_view;\n\
+	uniform mat4 m_proj;\n\
 	void main(){\n\
 		Color = color;\n\
-		gl_Position = m_transform * vec4(coord3d, 1.0);}";
+		gl_Position = m_proj * m_view * m_model * vec4(coord3d, 1.0);}";
 const char* fragmentSource = "#version 150 core\n\
 	in vec3 Color;\n\
 	out vec4 outColor; void main() { outColor = vec4(Color,1.0);}";
@@ -72,29 +74,37 @@ int main()
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 	glEnable(GL_DEPTH_TEST);
 	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-	mat4 m_transform;
+	mat4 m_model;
 	//glm_mat4_identity(m_transform);
-
+	mat4 m_view; //vec3 eye, vec3 center, vec3 up, mat4 dest
+	mat4 m_proj;
+	vec3 axis_z = {0.0f,0.0f,1.0f};
+	vec3 eye = {1.2f, 1.2f, 1.2f};
+	vec3 center = {0.0f, 0.0f, 0.0f};
+	glm_lookat(eye, center, axis_z, m_view);
+	GLint uniform_m_view = glGetUniformLocation(shaderProgram, "m_view");
+	glUniformMatrix4fv(uniform_m_view, 1, GL_FALSE, m_view[0]);
+	glm_perspective(glm_rad(45.0f), 800.0f/600.0f, 1.0f, 10.0f, m_proj);
+	GLint uniform_m_proj = glGetUniformLocation(shaderProgram, "m_proj");
+	glUniformMatrix4fv(uniform_m_proj, 1, GL_FALSE, m_proj[0]);
 	float move = sinf((float)clock() /CLOCKS_PER_SEC * (2*3.14)/5);
 	//float move = 0.5f;
 	float angle = (float)clock() / 10000 * 45;
-	vec3 axis_z = {0.0f,0.0f,1.0f};
 	vec3 move_vec = {move,  0.0f, 0.0f};
-	mat4 m_rotate;
-	glm_rotate_make(m_transform, move*20, axis_z);
+	glm_rotate_make(m_model, move*20, axis_z);
 	//glm_mat4_mulv3(m_rotate, move_vec, 1.0f, trans_vec);
 	//glm_vec3_rotate_m4(m_rotate, move_vec, trans_vec);
 	//glm_translate(m_transform, move_vec);
 	//glm_mat4_mul(m_rotate, m_transform, m_transform);
 	vec4 result = {1.0f, 0.0f, 0.0f, 1.0f};
 	printf("%f, %f, %f\n", result[0], result[1], result[2]);
-	glm_mat4_mulv(m_transform, result, result);
+	glm_mat4_mulv(m_model, result, result);
 	printf("%f, %f, %f\n", result[0], result[1], result[2]);
 
 
-	GLint uniform_m_transform;
-	uniform_m_transform = glGetUniformLocation(shaderProgram, "m_transform");
-	glUniformMatrix4fv(uniform_m_transform, 1, GL_FALSE, m_transform[0]);
+	GLint uniform_m_model;
+	uniform_m_model = glGetUniformLocation(shaderProgram, "m_model");
+	glUniformMatrix4fv(uniform_m_model, 1, GL_FALSE, m_model[0]);
 	GLint coord3dAttrib = glGetAttribLocation(shaderProgram, "coord3d");
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	glEnableVertexAttribArray(coord3dAttrib);
