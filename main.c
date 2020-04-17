@@ -164,6 +164,7 @@ int main()
 	mat4 m_view; //vec3 eye_pos, vec3 center, vec3 up, mat4 dest
 	mat4 m_proj;
 	vec3 axis_z = {0.0f,0.0f,1.0f};
+	vec3 axis_x = {1.0f,0.0f,0.0f};
 	h_accel = left_pressed ? 0.01f : h_accel;
 	h_accel = right_pressed ? -0.01f : h_accel;
 	z_v = space_pressed ? 0.01f : 0;
@@ -208,6 +209,10 @@ int main()
 	glVertexAttribPointer(colAttrib, 3, GL_FLOAT, GL_FALSE, 6*sizeof(float), (void*)(3*sizeof(float)));
 
 	//while(!glfwWindowShouldClose(window)) {
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+		glm_rotate_make(m_model, glm_rad(45)+move*20, axis_z);
+		glm_mat4_mulv(m_model, result, result);
+		glUniformMatrix4fv(uniform_m_model, 1, GL_FALSE, m_model[0]);
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 		glfwSwapBuffers(window);
 		glfwPollEvents();
