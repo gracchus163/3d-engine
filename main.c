@@ -209,9 +209,6 @@ int main()
 
 	//while(!glfwWindowShouldClose(window)) {
 		glDrawArrays(GL_TRIANGLES, 0, 36);
-		glm_rotate_make(m_model, move*50, axis_z);
-		glm_mat4_mulv(m_model, result, result);
-		glDrawArrays(GL_TRIANGLES, 0, 36);
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}
