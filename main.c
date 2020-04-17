@@ -19,6 +19,42 @@ const char* vertexSource = "#version 150 core\n\
 const char* fragmentSource = "#version 150 core\n\
 	in vec3 Color;\n\
 	out vec4 outColor; void main() { outColor = vec4(Color,1.0);}";
+int left_pressed = 0;
+int right_pressed = 0;
+int space_pressed = 0;
+int ctrl_pressed = 0;
+float h_v = 0.0f;
+void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+        glfwSetWindowShouldClose(window, GLFW_TRUE);
+	if (key == GLFW_KEY_LEFT && action == GLFW_PRESS) {
+		left_pressed = 1;
+		h_v+=0.01f;
+	}
+	else {
+		left_pressed = 0;
+	}
+	if (key == GLFW_KEY_RIGHT && action == GLFW_PRESS) {
+		right_pressed = 1;
+		h_v-=0.01f;
+	}
+	else {
+		right_pressed = 0;
+	}
+	if (key == GLFW_KEY_SPACE && action == GLFW_PRESS) {
+		space_pressed = 1;
+	}
+	else {
+		space_pressed = 0;
+	}
+	if (key == GLFW_KEY_C && action == GLFW_PRESS) {
+		ctrl_pressed = 1;
+	}
+	else {
+		ctrl_pressed = 0;
+	}
+}
 int main()
 {//following https://open.gl/context. installed glfw from pacman
 //glew from pacman also. github/recp/cglm for maths library
@@ -31,6 +67,7 @@ int main()
 
 	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 	GLFWwindow* window = glfwCreateWindow(800, 600, "OpenGL", NULL, NULL);
+	glfwSetKeyCallback(window, key_callback);
 	glfwMakeContextCurrent(window);
 	glewExperimental = GL_TRUE;
 	glewInit();
@@ -113,18 +150,32 @@ int main()
 	glLinkProgram(shaderProgram);
 	glUseProgram(shaderProgram);
 
+	float h_accel = 0.0f;
+//	float h_v = 0.0f;
+	float h_x = -1.5f;
+	float z_v = 0.0f;
+	float z_z = 0.2f;
 	while(!glfwWindowShouldClose(window)) {
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 	glEnable(GL_DEPTH_TEST);
 	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 	mat4 m_model;
 	//glm_mat4_identity(m_transform);
-	mat4 m_view; //vec3 eye, vec3 center, vec3 up, mat4 dest
+	mat4 m_view; //vec3 eye_pos, vec3 center, vec3 up, mat4 dest
 	mat4 m_proj;
 	vec3 axis_z = {0.0f,0.0f,1.0f};
-	vec3 eye = {1.2f, 1.2f, 1.2f};
+	h_accel = left_pressed ? 0.01f : h_accel;
+	h_accel = right_pressed ? -0.01f : h_accel;
+	z_v = space_pressed ? 0.01f : 0;
+	z_v = ctrl_pressed ? -0.01f : z_v;
+	//h_v += h_accel;
+	printf("a %f v %f x %f\n", h_accel, h_v, h_x);
+	//vec3 eye_pos = {h_x+=h_v, 1.5f, 0.2f};
+	vec3 eye_pos = {h_x+=h_v, 1.5f, z_z+=z_v};
 	vec3 center = {0.0f, 0.0f, 0.0f};
-	glm_lookat(eye, center, axis_z, m_view);
+	vec3 dir = { 2.6f,  -1.2f, 0.0f};
+	//glm_lookat(eye_pos, center, axis_z, m_view);
+	glm_look(eye_pos, dir, axis_z, m_view);
 	GLint uniform_m_view = glGetUniformLocation(shaderProgram, "m_view");
 	glUniformMatrix4fv(uniform_m_view, 1, GL_FALSE, m_view[0]);
 	glm_perspective(glm_rad(90.0f), 800.0f/600.0f, 1.0f, 10.0f, m_proj);
@@ -140,9 +191,9 @@ int main()
 	//glm_translate(m_transform, move_vec);
 	//glm_mat4_mul(m_rotate, m_transform, m_transform);
 	vec4 result = {1.0f, 0.0f, 0.0f, 1.0f};
-	printf("%f, %f, %f\n", result[0], result[1], result[2]);
+	//printf("%f, %f, %f\n", result[0], result[1], result[2]);
 	glm_mat4_mulv(m_model, result, result);
-	printf("%f, %f, %f\n", result[0], result[1], result[2]);
+	//printf("%f, %f, %f\n", result[0], result[1], result[2]);
 
 
 	GLint uniform_m_model;
