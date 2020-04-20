@@ -19,41 +19,21 @@ const char* vertexSource = "#version 150 core\n\
 const char* fragmentSource = "#version 150 core\n\
 	in vec3 Color;\n\
 	out vec4 outColor; void main() { outColor = vec4(Color,1.0);}";
-int left_pressed = 0;
-int right_pressed = 0;
-int space_pressed = 0;
-int ctrl_pressed = 0;
-float h_v = 0.0f;
+vec3 moveV = {0.0f, 0.0f, 0.0f};
+float speed = 0.05f;
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
+	//glm_vec3_zero(moveV);
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
         glfwSetWindowShouldClose(window, GLFW_TRUE);
-	if (key == GLFW_KEY_LEFT && action == GLFW_PRESS) {
-		left_pressed = 1;
-		h_v+=0.01f;
-	}
-	else {
-		left_pressed = 0;
-	}
-	if (key == GLFW_KEY_RIGHT && action == GLFW_PRESS) {
-		right_pressed = 1;
-		h_v-=0.01f;
-	}
-	else {
-		right_pressed = 0;
-	}
-	if (key == GLFW_KEY_SPACE && action == GLFW_PRESS) {
-		space_pressed = 1;
-	}
-	else {
-		space_pressed = 0;
-	}
-	if (key == GLFW_KEY_C && action == GLFW_PRESS) {
-		ctrl_pressed = 1;
-	}
-	else {
-		ctrl_pressed = 0;
-	}
+	if ((key == GLFW_KEY_W) == GLFW_PRESS)
+		moveV[1] += speed;
+	if ((key == GLFW_KEY_S) == GLFW_PRESS)
+		moveV[1] -= speed;
+	if ((key == GLFW_KEY_A) == GLFW_PRESS)
+		moveV[0] -= speed;
+	if ((key == GLFW_KEY_D) == GLFW_PRESS)
+		moveV[0] += speed;
 }
 int main()
 {//following https://open.gl/context. installed glfw from pacman
@@ -150,11 +130,6 @@ int main()
 	glLinkProgram(shaderProgram);
 	glUseProgram(shaderProgram);
 
-	float h_accel = 0.0f;
-//	float h_v = 0.0f;
-	float h_x = -1.5f;
-	float z_v = 0.0f;
-	float z_z = 0.2f;
 	while(!glfwWindowShouldClose(window)) {
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 	glEnable(GL_DEPTH_TEST);
@@ -164,15 +139,10 @@ int main()
 	mat4 m_view; //vec3 eye_pos, vec3 center, vec3 up, mat4 dest
 	mat4 m_proj;
 	vec3 axis_z = {0.0f,0.0f,1.0f};
-	vec3 axis_x = {1.0f,0.0f,0.0f};
-	h_accel = left_pressed ? 0.01f : h_accel;
-	h_accel = right_pressed ? -0.01f : h_accel;
-	z_v = space_pressed ? 0.01f : 0;
-	z_v = ctrl_pressed ? -0.01f : z_v;
 	//h_v += h_accel;
-	printf("a %f v %f x %f\n", h_accel, h_v, h_x);
 	//vec3 eye_pos = {h_x+=h_v, 1.5f, 0.2f};
-	vec3 eye_pos = {h_x+=h_v, 1.5f, z_z+=z_v};
+	vec3 eye_pos = {-2.0f, 1.5f, 0.2f};
+	glm_vec3_add(eye_pos, moveV, eye_pos);
 	vec3 center = {0.0f, 0.0f, 0.0f};
 	vec3 dir = { 2.6f,  -1.2f, 0.0f};
 	//glm_lookat(eye_pos, center, axis_z, m_view);
