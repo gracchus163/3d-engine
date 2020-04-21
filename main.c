@@ -31,24 +31,35 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	vec3 dirN = {0.0f, 0.0f, 0.0f};
 	glm_vec3_normalize_to(dir, dirN);
 	glm_vec3_normalize(rightV);
+	printf("%f %f %f\n", dir[0], dir[1], dir[2]);
 	printf("%f %f %f\n", dirN[0], dirN[1], dirN[2]);
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
         glfwSetWindowShouldClose(window, GLFW_TRUE);
-	if ((key == GLFW_KEY_W) == GLFW_PRESS)
+	if ((key == GLFW_KEY_W) == GLFW_PRESS) {
 		//moveV[1] += speed;
-		glm_vec3_add(dirN, moveV, moveV);
-	if ((key == GLFW_KEY_S) == GLFW_PRESS)
+		glm_vec3_muladds(dirN, speed, moveV);
+		//glm_vec3_add(dirN, moveV, moveV);
+	}
+	if ((key == GLFW_KEY_S) == GLFW_PRESS) {
 		//moveV[1] -= speed;
 		//glm_vec3_sub(moveV, dir, moveV);
+		glm_vec3_scale(dirN, speed, dirN);
 		glm_vec3_sub(moveV, dirN, moveV);
-	if ((key == GLFW_KEY_A) == GLFW_PRESS)
+	}
+	if ((key == GLFW_KEY_A) == GLFW_PRESS) {
+		glm_vec3_scale(rightV, speed, rightV);
 		glm_vec3_sub(moveV, rightV, moveV);
-	if ((key == GLFW_KEY_D) == GLFW_PRESS)
+	}
+	if ((key == GLFW_KEY_D) == GLFW_PRESS) {
+		glm_vec3_scale(rightV, speed, rightV);
 		glm_vec3_add(moveV, rightV, moveV);
-	if ((key == GLFW_KEY_SPACE) == GLFW_PRESS)
+	}
+	if ((key == GLFW_KEY_SPACE) == GLFW_PRESS) {
 		moveV[2] += speed;
-	if ((key == GLFW_KEY_C) == GLFW_PRESS)
+	}
+	if ((key == GLFW_KEY_C) == GLFW_PRESS) {
 		moveV[2] -= speed;
+	}
 }
 int main()
 {//following https://open.gl/context. installed glfw from pacman
