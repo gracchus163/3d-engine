@@ -20,20 +20,35 @@ const char* fragmentSource = "#version 150 core\n\
 	in vec3 Color;\n\
 	out vec4 outColor; void main() { outColor = vec4(Color,1.0);}";
 vec3 moveV = {0.0f, 0.0f, 0.0f};
+vec3 dir = { 2.6f,  -1.2f, 0.0f};
+vec3 rightV = {0.0f, 0.0f, 0.0f};
+vec3 axis_z = {0.0f,0.0f,1.0f};
 float speed = 0.05f;
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
-	//glm_vec3_zero(moveV);
+	glm_vec3_zero(rightV);
+	glm_vec3_crossn(axis_z, dir, rightV);
+	vec3 dirN = {0.0f, 0.0f, 0.0f};
+	glm_vec3_normalize_to(dir, dirN);
+	glm_vec3_normalize(rightV);
+	printf("%f %f %f\n", dirN[0], dirN[1], dirN[2]);
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
         glfwSetWindowShouldClose(window, GLFW_TRUE);
 	if ((key == GLFW_KEY_W) == GLFW_PRESS)
-		moveV[1] += speed;
+		//moveV[1] += speed;
+		glm_vec3_add(dirN, moveV, moveV);
 	if ((key == GLFW_KEY_S) == GLFW_PRESS)
-		moveV[1] -= speed;
+		//moveV[1] -= speed;
+		//glm_vec3_sub(moveV, dir, moveV);
+		glm_vec3_sub(moveV, dirN, moveV);
 	if ((key == GLFW_KEY_A) == GLFW_PRESS)
-		moveV[0] -= speed;
+		glm_vec3_sub(moveV, rightV, moveV);
 	if ((key == GLFW_KEY_D) == GLFW_PRESS)
-		moveV[0] += speed;
+		glm_vec3_add(moveV, rightV, moveV);
+	if ((key == GLFW_KEY_SPACE) == GLFW_PRESS)
+		moveV[2] += speed;
+	if ((key == GLFW_KEY_C) == GLFW_PRESS)
+		moveV[2] -= speed;
 }
 int main()
 {//following https://open.gl/context. installed glfw from pacman
@@ -138,13 +153,17 @@ int main()
 	//glm_mat4_identity(m_transform);
 	mat4 m_view; //vec3 eye_pos, vec3 center, vec3 up, mat4 dest
 	mat4 m_proj;
-	vec3 axis_z = {0.0f,0.0f,1.0f};
 	//h_v += h_accel;
 	//vec3 eye_pos = {h_x+=h_v, 1.5f, 0.2f};
+	vec3 temp = {0.0f, 0.0f, 0.0f};
 	vec3 eye_pos = {-2.0f, 1.5f, 0.2f};
+	//glm_vec3_cross(dir, moveV, moveV);
+	printf("%f %f %f\n", moveV[0], moveV[1], moveV[2]);
+	//glm_vec3_crossn(dir, moveV, temp);
 	glm_vec3_add(eye_pos, moveV, eye_pos);
+	printf("%f %f %f\n", temp[0], temp[1], temp[2]);
+	//printf("%f %f %f\n", eye_pos[0], eye_pos[1], eye_pos[2]);
 	vec3 center = {0.0f, 0.0f, 0.0f};
-	vec3 dir = { 2.6f,  -1.2f, 0.0f};
 	//glm_lookat(eye_pos, center, axis_z, m_view);
 	glm_look(eye_pos, dir, axis_z, m_view);
 	GLint uniform_m_view = glGetUniformLocation(shaderProgram, "m_view");
@@ -155,7 +174,6 @@ int main()
 	float move = sinf((float)clock() /CLOCKS_PER_SEC * (2*3.14)/5);
 	//float move = 0.5f;
 	float angle = (float)clock() / 10000 * 45;
-	vec3 move_vec = {move,  0.0f, 0.0f};
 	glm_rotate_make(m_model, move*20, axis_z);
 	//glm_mat4_mulv3(m_rotate, move_vec, 1.0f, trans_vec);
 	//glm_vec3_rotate_m4(m_rotate, move_vec, trans_vec);
