@@ -22,7 +22,7 @@ const char* fragmentSource = "#version 150 core\n\
 vec3 moveV = {0.0f, 0.0f, 0.0f};
 vec3 dir = { 2.6f,  -1.2f, 0.0f};
 vec3 rightV = {0.0f, 0.0f, 0.0f};
-vec3 axis_z = {0.0f,0.0f,1.0f};
+vec3 axis_z = {0.0f,1.0f,0.0f};
 float speed = 0.05f;
 int firstMouse = 1;
 float yaw = -90.0f;
@@ -36,8 +36,8 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	vec3 dirN = {0.0f, 0.0f, 0.0f};
 	glm_vec3_normalize_to(dir, dirN);
 	glm_vec3_normalize(rightV);
-	printf("%f %f %f\n", dir[0], dir[1], dir[2]);
-	printf("%f %f %f\n", dirN[0], dirN[1], dirN[2]);
+	//printf("%f %f %f\n", dir[0], dir[1], dir[2]);
+	//printf("%f %f %f\n", dirN[0], dirN[1], dirN[2]);
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
         glfwSetWindowShouldClose(window, GLFW_TRUE);
 	if ((key == GLFW_KEY_W) == GLFW_PRESS) {
@@ -87,16 +87,16 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
     yaw   += xoffset;
     pitch += yoffset;
 
-    if(pitch > 89.0f)
+    /*if(pitch > 89.0f)
         pitch = 89.0f;
     if(pitch < -89.0f)
         pitch = -89.0f;
-
-    vec3 direction;
-    direction[0] = cos(glm_rad(yaw)) * cos(glm_rad(pitch));
-    direction[1] = sin(glm_rad(pitch));
-    direction[2] = sin(glm_rad(yaw)) * cos(glm_rad(pitch));
-	glm_normalize_to(dir, direction);
+*/
+    dir[0] = cos(glm_rad(yaw)) * cos(glm_rad(pitch));
+    dir[1] = sin(glm_rad(pitch));
+    dir[2] = sin(glm_rad(yaw)) * cos(glm_rad(pitch));
+	//glm_normalize_to(direction, dir);
+	printf("%f %f %f\n", dir[0], dir[1], dir[2]);
 }
 int main()
 {//following https://open.gl/context. installed glfw from pacman
@@ -208,10 +208,10 @@ int main()
 	vec3 temp = {0.0f, 0.0f, 0.0f};
 	vec3 eye_pos = {-2.0f, 1.5f, 0.2f};
 	//glm_vec3_cross(dir, moveV, moveV);
-	printf("%f %f %f\n", moveV[0], moveV[1], moveV[2]);
+	//printf("%f %f %f\n", moveV[0], moveV[1], moveV[2]);
 	//glm_vec3_crossn(dir, moveV, temp);
 	glm_vec3_add(eye_pos, moveV, eye_pos);
-	printf("%f %f %f\n", temp[0], temp[1], temp[2]);
+	//printf("%f %f %f\n", temp[0], temp[1], temp[2]);
 	//printf("%f %f %f\n", eye_pos[0], eye_pos[1], eye_pos[2]);
 	vec3 center = {0.0f, 0.0f, 0.0f};
 	//glm_lookat(eye_pos, center, axis_z, m_view);
