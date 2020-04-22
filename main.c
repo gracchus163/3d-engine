@@ -24,6 +24,11 @@ vec3 dir = { 2.6f,  -1.2f, 0.0f};
 vec3 rightV = {0.0f, 0.0f, 0.0f};
 vec3 axis_z = {0.0f,0.0f,1.0f};
 float speed = 0.05f;
+int firstMouse = 1;
+float yaw = -90.0f;
+float pitch = 0.0f;
+float lastX = 800.0f/2.0f;
+float lastY = 600.0f/2.0f;
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
 	glm_vec3_zero(rightV);
@@ -61,6 +66,38 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		moveV[2] -= speed;
 	}
 }
+void mouse_callback(GLFWwindow* window, double xpos, double ypos)
+{
+    if(firstMouse)
+    {
+        lastX = xpos;
+        lastY = ypos;
+        firstMouse = false;
+    }
+  
+    float xoffset = xpos - lastX;
+    float yoffset = lastY - ypos; 
+    lastX = xpos;
+    lastY = ypos;
+
+    float sensitivity = 0.05f;
+    xoffset *= sensitivity;
+    yoffset *= sensitivity;
+
+    yaw   += xoffset;
+    pitch += yoffset;
+
+    if(pitch > 89.0f)
+        pitch = 89.0f;
+    if(pitch < -89.0f)
+        pitch = -89.0f;
+
+    vec3 direction;
+    direction[0] = cos(glm_rad(yaw)) * cos(glm_rad(pitch));
+    direction[1] = sin(glm_rad(pitch));
+    direction[2] = sin(glm_rad(yaw)) * cos(glm_rad(pitch));
+	glm_normalize_to(dir, direction);
+}
 int main()
 {//following https://open.gl/context. installed glfw from pacman
 //glew from pacman also. github/recp/cglm for maths library
@@ -73,6 +110,8 @@ int main()
 
 	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 	GLFWwindow* window = glfwCreateWindow(800, 600, "OpenGL", NULL, NULL);
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	glfwSetCursorPosCallback(window, mouse_callback);
 	glfwSetKeyCallback(window, key_callback);
 	glfwMakeContextCurrent(window);
 	glewExperimental = GL_TRUE;
