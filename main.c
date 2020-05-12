@@ -19,6 +19,35 @@ float yaw = -90.0f;
 float pitch = 0.0f;
 float lastX = 800.0f/2.0f;
 float lastY = 600.0f/2.0f;
+void movement() {
+	glm_vec3_zero(rightV);
+	glm_vec3_crossn(up, dir, rightV);
+	vec3 dirN = {dir[0], 0.0f, dir[2]};
+	glm_vec3_normalize(dirN);
+	glm_vec3_normalize(rightV);
+
+	if (forward) {
+		glm_vec3_muladds(dirN, speed, moveV);
+	}
+	if (backward) {
+		glm_vec3_scale(dirN, speed, dirN);
+		glm_vec3_sub(moveV, dirN, moveV);
+	}
+	if (left) {
+		glm_vec3_scale(rightV, speed, rightV);
+		glm_vec3_add(moveV, rightV, moveV);
+	}
+	if (right) {
+		glm_vec3_scale(rightV, speed, rightV);
+		glm_vec3_sub(moveV, rightV, moveV);
+	}
+	if (jump) {
+		moveV[1] += speed;
+	}
+	if (crouch) {
+		moveV[1] -= speed;
+	}
+}
 int main()
 {//following https://open.gl/context. installed glfw from pacman
 //glew from pacman also. github/recp/cglm for maths library
@@ -108,6 +137,7 @@ while(!glfwWindowShouldClose(window)) {
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 		glfwSwapBuffers(window);
 		glfwPollEvents();
+		movement();
 }
 	glfwTerminate();
 }
