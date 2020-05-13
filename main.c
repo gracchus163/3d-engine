@@ -135,6 +135,23 @@ while(!glfwWindowShouldClose(window)) {
 		glUniformMatrix4fv(uniform_m_model, 1, GL_FALSE, m_base[0]);
 	glVertexAttribPointer(colAttrib, 3, GL_FLOAT, GL_FALSE, 0,(void*)(3*sizeof(float)));
 		glDrawArrays(GL_TRIANGLES, 0, 36);
+
+	GLuint vao_pyramid;
+	glGenVertexArrays(1, &vao_pyramid);
+	glBindVertexArray(vao_pyramid);
+	GLuint vbo_pyramid;
+	glGenBuffers(1, &vbo_pyramid);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo_pyramid);
+	glEnableVertexAttribArray(coord3dAttrib);
+	glEnableVertexAttribArray(colAttrib);
+	glm_mat4_identity(m_base);
+	glUniformMatrix4fv(uniform_m_model, 1, GL_FALSE, m_base[0]);
+	glUniformMatrix4fv(uniform_m_view, 1, GL_FALSE, m_view[0]);
+	glUniformMatrix4fv(uniform_m_proj, 1, GL_FALSE, m_proj[0]);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(pyramid_vertices), pyramid_vertices, GL_STATIC_DRAW);
+	glVertexAttribPointer(coord3dAttrib, 3, GL_FLOAT, GL_FALSE, 6*sizeof(float), 0);
+	glVertexAttribPointer(colAttrib, 3, GL_FLOAT, GL_FALSE, 6*sizeof(float), (void*)(3*sizeof(float)));
+	glDrawArrays(GL_TRIANGLES, 0, 6*3);
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 		movement();
