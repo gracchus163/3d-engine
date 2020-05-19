@@ -7,7 +7,7 @@
 #include "input.h"
 #include "global.h"
 #include "object.h"
-#include "util.h"
+#include "loadShader.h"
 
 vec3 moveV = {0.0f, 0.0f, 0.0f};
 vec3 dir = { 2.6f,  -1.2f, 0.0f};
@@ -73,25 +73,9 @@ int main()
 	glGenBuffers(1, &vbo);
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(cube_vertices), cube_vertices, GL_STATIC_DRAW);
-	GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(vertexShader, 1 , &vertexSource, NULL);
-	glCompileShader(vertexShader);
-	GLint status;
-	glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &status);
-	char buffer[512];
-	glGetShaderInfoLog(vertexShader, 512, NULL, buffer);
-	printf(buffer);
-	GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(fragmentShader, 1, &fragmentSource, NULL);
-	glCompileShader(fragmentShader);
-	glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &status);
-	glGetShaderInfoLog(fragmentShader, 512, NULL, buffer);
-	printf(buffer);
 
 	GLuint shaderProgram = glCreateProgram();
-	glAttachShader(shaderProgram, vertexShader);
-	glAttachShader(shaderProgram, fragmentShader);
-	glLinkProgram(shaderProgram);
+	load_shader(shaderProgram);
 	glUseProgram(shaderProgram);
 
 while(!glfwWindowShouldClose(window)) {

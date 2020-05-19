@@ -5,6 +5,13 @@
 #include <stdio.h>
 #include <cglm/cglm.h>
 #include "global.h"
+#include "input.h"
+int forward = 0;
+int backward = 0;
+int left = 0;
+int right = 0;
+int jump = 0;
+int crouch = 0;
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
 //	glm_vec3_zero(rightV);
