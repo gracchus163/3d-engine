@@ -21,6 +21,10 @@ float yaw = -90.0f;
 float pitch = 0.0f;
 float lastX = 800.0f/2.0f;
 float lastY = 600.0f/2.0f;
+struct AABB {
+	vec3 min;
+	vec3 max;
+};
 void movement() {
 	glm_vec3_zero(rightV);
 	glm_vec3_zero(moveV);
@@ -50,6 +54,15 @@ void movement() {
 	if (crouch) {
 		moveV[1] -= speed;
 	}
+}
+int colliding(struct AABB box, vec3 pos) {
+	if (pos[0] > box.min[0] && pos[0] < box.max[0] &&
+		pos[1] > box.min[1] && pos[1] < box.max[1] &&
+		pos[2] > box.min[2] && pos[2] < box.max[2]) {
+			return 1;
+	}
+	return 0;
+
 }
 int main()
 {//following https://open.gl/context. installed glfw from pacman
@@ -93,7 +106,16 @@ int main()
 	printf("error: %d\n", glGetError());
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo_base_indices);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int)*3*(*indices_len), indices, GL_STATIC_DRAW);
-	//free(&verts); free(&indices);
+	struct AABB base_bb;
+	base_bb.min[0] =-10.0f;
+	base_bb.min[1] = -0.2f;
+	base_bb.min[2] =-10.0f;
+	base_bb.max[0] = 10.0f;
+	base_bb.max[1] = 0.2f;
+	base_bb.max[2] = 10.0f;
+	base_bb.min[1]+= -2.0f;
+	base_bb.max[1]+= -2.0f;
+	free(verts); free(indices);
 
 	glBindBuffer(GL_ARRAY_BUFFER, vbo_low);
 	load_ply("assets/low_cube.ply", &verts, vert_len, &indices, indices_len);
@@ -101,7 +123,16 @@ int main()
 	printf("error: %d\n", glGetError());
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo_low_indices);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int)*3*(*indices_len), indices, GL_STATIC_DRAW);
-	//free(&verts); free(&indices);
+	struct AABB low_bb;
+	low_bb.min[0] = -1.0f;
+	low_bb.min[1] = -1.0f;
+	low_bb.min[2] = -1.0f;
+	low_bb.max[0] = 1.0f;
+	low_bb.max[1] = 1.0f;
+	low_bb.max[2] = 1.0f;
+	low_bb.min[1]+=0.5f;
+	low_bb.max[1]+=0.5f;
+	free(verts); free(indices);
 
 	glBindBuffer(GL_ARRAY_BUFFER, vbo_high);
 	load_ply("assets/high_cube.ply", &verts, vert_len, &indices, indices_len);
@@ -109,7 +140,18 @@ int main()
 	printf("error: %d\n", glGetError());
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo_high_indices);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int)*3*(*indices_len), indices, GL_STATIC_DRAW);
-	//free(&verts); free(&indices);
+	struct AABB high_bb;
+	high_bb.min[0] = -1.0f;
+	high_bb.min[1] = -4.486757;
+	high_bb.min[2] = -1.084643f;
+	high_bb.max[0] = 1.0f;
+	high_bb.max[1] = 4.486757f;
+	high_bb.max[2] = 1.084643;
+	high_bb.min[0]+=4.5f;
+	high_bb.max[0]+=4.5f;
+	high_bb.min[1]+=1.5f;
+	high_bb.max[1]+=1.5f;
+	free(verts); free(indices);
 
 	GLuint shaderProgram = glCreateProgram();
 	load_shader(shaderProgram);
@@ -129,6 +171,10 @@ while(!glfwWindowShouldClose(window)) {
 		eye_pos[1] -= moveV[1];
 	}*/
 	glm_look(eye_pos, dir, up, m_view);
+	printf("%f %f %f\n", eye_pos[0],eye_pos[1], eye_pos[2]);
+	if(colliding(base_bb, eye_pos)) printf("colliding\n");
+	if(colliding(low_bb, eye_pos)) printf("colliding\n");
+	if(colliding(high_bb, eye_pos)) printf("colliding\n");
 	glm_perspective(glm_rad(90.0f), 800.0f/600.0f, 0.1f, 20.0f, m_proj);
 
 	glBindBuffer(GL_ARRAY_BUFFER, vbo_base);
