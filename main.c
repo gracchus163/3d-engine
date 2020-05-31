@@ -71,33 +71,46 @@ int main()
 	GLuint vao;
 	glGenVertexArrays(1, &vao);
 	glBindVertexArray(vao);
-	GLuint vbo;
-	glGenBuffers(1, &vbo);
-	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(cube_vertices), cube_vertices, GL_STATIC_DRAW);
 
-	GLuint vao_pyramid;
-	glGenVertexArrays(1, &vao_pyramid);
-	glBindVertexArray(vao_pyramid);
-	GLuint vbo_pyramid;
-	glGenBuffers(1, &vbo_pyramid);
-	glBindBuffer(GL_ARRAY_BUFFER, vbo_pyramid);
-	//glBufferData(GL_ARRAY_BUFFER, sizeof(pyramid_vertices), pyramid_vertices, GL_STATIC_DRAW);
+	GLuint vbo_base, vbo_low, vbo_high;
+	glGenBuffers(1, &vbo_base);
+	glGenBuffers(1, &vbo_low);
+	glGenBuffers(1, &vbo_high);
+	GLuint vbo_base_indices, vbo_low_indices, vbo_high_indices;
+	glGenBuffers(1, &vbo_base_indices);
+	glGenBuffers(1, &vbo_low_indices);
+	glGenBuffers(1, &vbo_high_indices);
+
+	glBindBuffer(GL_ARRAY_BUFFER, vbo_base);
 	float* verts;
-	float* indices;
-	int* vert_len;
-	int* indices_len;
-	vert_len = malloc(sizeof(int));
-	indices_len = malloc(sizeof(int));
-	verts = load_ply(vert_len);
-	printf("mainverts %d %f %f %f %f %f %f\n", *vert_len, verts[0], verts[1], verts[2], verts[3], verts[4], verts[5]);
+	unsigned int* indices;
+	unsigned int* vert_len;
+	unsigned int* indices_len;
+	vert_len = malloc(sizeof(unsigned int));
+	indices_len = malloc(sizeof(unsigned int));
+	load_ply("assets/base.ply", &verts, vert_len, &indices, indices_len);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(float)**vert_len*6, verts, GL_STATIC_DRAW);
 	printf("error: %d\n", glGetError());
-	for(int i = 0; i < *vert_len; i++) {
-		int n = i * 6;
-		printf("x %f y %f z %f r %f g %f b %f\n",
-				verts[0+n], verts[1+n], verts[2+n], verts[3+n], verts[4+n], verts[5+n]);
-	}
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo_base_indices);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int)*3*(*indices_len), indices, GL_STATIC_DRAW);
+	//free(&verts); free(&indices);
+
+	glBindBuffer(GL_ARRAY_BUFFER, vbo_low);
+	load_ply("assets/low_cube.ply", &verts, vert_len, &indices, indices_len);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float)**vert_len*6, verts, GL_STATIC_DRAW);
+	printf("error: %d\n", glGetError());
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo_low_indices);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int)*3*(*indices_len), indices, GL_STATIC_DRAW);
+	//free(&verts); free(&indices);
+
+	glBindBuffer(GL_ARRAY_BUFFER, vbo_high);
+	load_ply("assets/high_cube.ply", &verts, vert_len, &indices, indices_len);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float)**vert_len*6, verts, GL_STATIC_DRAW);
+	printf("error: %d\n", glGetError());
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo_high_indices);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int)*3*(*indices_len), indices, GL_STATIC_DRAW);
+	//free(&verts); free(&indices);
+
 	GLuint shaderProgram = glCreateProgram();
 	load_shader(shaderProgram);
 	glUseProgram(shaderProgram);
@@ -112,55 +125,72 @@ while(!glfwWindowShouldClose(window)) {
 	mat4 m_proj;
 
 	glm_vec3_add(eye_pos, moveV, eye_pos);
-	if (eye_pos[1] < -0.3f) {
+	/*if (eye_pos[1] < -0.3f) {
 		eye_pos[1] -= moveV[1];
-	}
+	}*/
 	glm_look(eye_pos, dir, up, m_view);
+	glm_perspective(glm_rad(90.0f), 800.0f/600.0f, 0.1f, 20.0f, m_proj);
 
-	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo_base);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo_base_indices);
 	GLint uniform_m_view = glGetUniformLocation(shaderProgram, "m_view");
 	glUniformMatrix4fv(uniform_m_view, 1, GL_FALSE, m_view[0]);
-	glm_perspective(glm_rad(90.0f), 800.0f/600.0f, 0.1f, 10.0f, m_proj);
 	GLint uniform_m_proj = glGetUniformLocation(shaderProgram, "m_proj");
 	glUniformMatrix4fv(uniform_m_proj, 1, GL_FALSE, m_proj[0]);
 	glm_mat4_identity(m_model);
-
 	GLint uniform_m_model;
 	uniform_m_model = glGetUniformLocation(shaderProgram, "m_model");
+	glm_translate_y(m_model, -2.0f);
 	glUniformMatrix4fv(uniform_m_model, 1, GL_FALSE, m_model[0]);
 	GLint coord3dAttrib = glGetAttribLocation(shaderProgram, "coord3d");
-	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	glEnableVertexAttribArray(coord3dAttrib);
 	glVertexAttribPointer(coord3dAttrib, 3, GL_FLOAT, GL_FALSE, 6*sizeof(float), 0);
 	GLint colAttrib = glGetAttribLocation(shaderProgram, "color");
 	glEnableVertexAttribArray(colAttrib);
 	glVertexAttribPointer(colAttrib, 3, GL_FLOAT, GL_FALSE, 6*sizeof(float), (void*)(3*sizeof(float)));
+	glDrawElements(GL_TRIANGLES, *indices_len*3, GL_UNSIGNED_INT, 0);
 
-	//glDrawArrays(GL_TRIANGLES, 0, 36);
-	glm_rotate_make(m_model, glm_rad(45), up);
-	glUniformMatrix4fv(uniform_m_model, 1, GL_FALSE, m_model[0]);
-	//glDrawArrays(GL_TRIANGLES, 0, 36);
-
-	mat4 m_base;
-	vec3 scale = {6.0f, 1.0f, 9.0f};
-	glm_scale_make(m_base, scale);
-	glm_translate_y(m_base, -1.0f);
-		glUniformMatrix4fv(uniform_m_model, 1, GL_FALSE, m_base[0]);
-	glVertexAttribPointer(colAttrib, 3, GL_FLOAT, GL_FALSE, 0,(void*)(3*sizeof(float)));
-		//glDrawArrays(GL_TRIANGLES, 0, 36);
-
-	glBindBuffer(GL_ARRAY_BUFFER, vbo_pyramid);
-	glEnableVertexAttribArray(coord3dAttrib);
-	glEnableVertexAttribArray(colAttrib);
-	glm_mat4_identity(m_base);
-	glUniformMatrix4fv(uniform_m_model, 1, GL_FALSE, m_base[0]);
+	glm_mat4_identity(m_model);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo_low);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo_low_indices);
+	uniform_m_view = glGetUniformLocation(shaderProgram, "m_view");
 	glUniformMatrix4fv(uniform_m_view, 1, GL_FALSE, m_view[0]);
+	uniform_m_proj = glGetUniformLocation(shaderProgram, "m_proj");
 	glUniformMatrix4fv(uniform_m_proj, 1, GL_FALSE, m_proj[0]);
+	glm_mat4_identity(m_model);
+	uniform_m_model;
+	uniform_m_model = glGetUniformLocation(shaderProgram, "m_model");
+	glm_translate_y(m_model, 0.5f);
+	glUniformMatrix4fv(uniform_m_model, 1, GL_FALSE, m_model[0]);
+	coord3dAttrib = glGetAttribLocation(shaderProgram, "coord3d");
+	glEnableVertexAttribArray(coord3dAttrib);
 	glVertexAttribPointer(coord3dAttrib, 3, GL_FLOAT, GL_FALSE, 6*sizeof(float), 0);
+	colAttrib = glGetAttribLocation(shaderProgram, "color");
+	glEnableVertexAttribArray(colAttrib);
 	glVertexAttribPointer(colAttrib, 3, GL_FLOAT, GL_FALSE, 6*sizeof(float), (void*)(3*sizeof(float)));
-	//glDrawArrays(GL_TRIANGLES, 0, 6*3);
-	glDrawArrays(GL_TRIANGLES, 0, *vert_len);
-	printf("error: %d\n", glGetError());
+	glDrawElements(GL_TRIANGLES, *indices_len*3, GL_UNSIGNED_INT, 0);
+
+	glm_mat4_identity(m_model);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo_high);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo_high_indices);
+	uniform_m_view = glGetUniformLocation(shaderProgram, "m_view");
+	glUniformMatrix4fv(uniform_m_view, 1, GL_FALSE, m_view[0]);
+	uniform_m_proj = glGetUniformLocation(shaderProgram, "m_proj");
+	glUniformMatrix4fv(uniform_m_proj, 1, GL_FALSE, m_proj[0]);
+	glm_mat4_identity(m_model);
+	uniform_m_model;
+	uniform_m_model = glGetUniformLocation(shaderProgram, "m_model");
+	glm_translate_y(m_model, 1.5f);
+	glm_translate_x(m_model, 4.5f);
+	glUniformMatrix4fv(uniform_m_model, 1, GL_FALSE, m_model[0]);
+	coord3dAttrib = glGetAttribLocation(shaderProgram, "coord3d");
+	glEnableVertexAttribArray(coord3dAttrib);
+	glVertexAttribPointer(coord3dAttrib, 3, GL_FLOAT, GL_FALSE, 6*sizeof(float), 0);
+	colAttrib = glGetAttribLocation(shaderProgram, "color");
+	glEnableVertexAttribArray(colAttrib);
+	glVertexAttribPointer(colAttrib, 3, GL_FLOAT, GL_FALSE, 6*sizeof(float), (void*)(3*sizeof(float)));
+	glDrawElements(GL_TRIANGLES, *indices_len*3, GL_UNSIGNED_INT, 0);
+
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 		movement();
